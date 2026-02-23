@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -40,11 +42,18 @@ public class UserResource {
         entityModel.add(linkTo.withRel("all-users"));
         return entityModel;
     }
-
+    
+    // Active approach:
+    // Use @JsonView to hide fields for this endpoint (here: "id" is excluded).
+    // Alternative approach:
+    // See UserIdFilterAdviceExample.java for a commented-out ResponseBodyAdvice
+    // implementation that does the same using SmartHttpMessageConverter write hints.
+    @JsonView(User.Views.Public.class)
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userDaoService.getAllUsers();
     }
+
 
     @PostMapping("/users")
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {

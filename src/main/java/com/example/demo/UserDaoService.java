@@ -17,9 +17,9 @@ public class UserDaoService {
     }
 
     static {
-        users.add(new User(1, "Yahia", "Tarsek", LocalDate.of(1990, 1, 1)));
-        users.add(new User(2, "Younes", "Tarek", LocalDate.of(1990, 1, 2)));
-        users.add(new User(3, "Yassine", "Tarek", LocalDate.of(1990, 1, 3)));
+        users.add(new User(1, "Yahia", "Tarsek", LocalDate.of(1990, 1, 1), "password"));
+        users.add(new User(2, "Younes", "Tarek", LocalDate.of(1990, 1, 2), "password"));
+        users.add(new User(3, "Yassine", "Tarek", LocalDate.of(1990, 1, 3), "password"));
     }
 
     public List<User> getAllUsers() {
