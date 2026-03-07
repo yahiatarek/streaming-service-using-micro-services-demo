@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
-import { CatalogModule } from './catalog/catalog.module';
-import { HealthModule } from './health/health.module';
-import { PlaybackModule } from './playback/playback.module';
+import { CatalogModule } from "./catalog/catalog.module";
+import { HealthModule } from "./health/health.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), HealthModule, CatalogModule, PlaybackModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    HealthModule,
+    CatalogModule,
+  ],
 })
 export class AppModule {}

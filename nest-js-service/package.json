@@ -12,8 +12,6 @@
     "dev": "nodemon --watch src --exec npm run start:dev"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.922.0",
-    "@aws-sdk/s3-request-presigner": "^3.922.0",
     "@nestjs/common": "^10.4.12",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.4.12",
@@ -26,9 +24,9 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",
     "@types/node": "^22.13.11",
+    "nodemon": "^3.1.12",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.8.2",
-    "nodemon": "^3.1.12"
+    "typescript": "^5.8.2"
   }
 }
