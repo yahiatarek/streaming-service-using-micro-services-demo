@@ -4,11 +4,6 @@ public class Limit {
     private int minimum;
     private int maximum;
 
-    public Limit(int minimum, int maximum) {
-        this.minimum = minimum;
-        this.maximum = maximum;
-    }
-
     public int getMinimum() {
         return minimum;
     }
