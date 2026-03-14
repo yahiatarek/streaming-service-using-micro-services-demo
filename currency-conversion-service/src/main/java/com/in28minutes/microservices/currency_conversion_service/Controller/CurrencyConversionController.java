@@ -18,7 +18,9 @@ public class CurrencyConversionController {
         this.currencyExchangeProxy = currencyExchangeProxy;
     }
     
-    @GetMapping("/currency-Conversion/quantity/{quantity}/{from}/{to}")
+    @GetMapping({
+        "/currency-conversion/quantity/{quantity}/{from}/{to}"
+    })
     public CurrencyConversion retrieveConversionValue(
         @PathVariable BigDecimal quantity,
         @PathVariable String from,
