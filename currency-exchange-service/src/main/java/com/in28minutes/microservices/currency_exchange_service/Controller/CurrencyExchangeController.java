@@ -21,8 +21,14 @@ public class CurrencyExchangeController {
     }
     
     @GetMapping("/currency-exchange/from/{from}/to/{to}")
-    public CurrencyExchange currencyExchange(@PathVariable String from, @PathVariable String to, @RequestHeader("headerfromcurrencyexchangegateway") String header) {
-        System.out.println("gateway added this header:" + header);
+    public CurrencyExchange currencyExchange(
+        @PathVariable String from,
+        @PathVariable String to,
+        @RequestHeader(value = "headerfromcurrencyexchangegateway", required = false) String header
+    ) {
+        if (header != null) {
+            System.out.println("gateway added this header to service 1:" + header);
+        }
         
         CurrencyExchange currencyExchange = repository.findByFromAndTo(from, to);
         if (currencyExchange == null) {

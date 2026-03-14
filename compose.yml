@@ -1,0 +1,99 @@
+services:
+  spring-cloud-config-server:
+    image: spring-cloud-config-server:latest
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_CLOUD_CONFIG_SERVER_GIT_URI: file:///config-repo
+    volumes:
+      - .:/config-repo:ro
+    networks:
+      - microservices-network
+
+  naming-server:
+    image: naming-server:latest
+    ports:
+      - "8761:8761"
+    depends_on:
+      - spring-cloud-config-server
+    environment:
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+    networks:
+      - microservices-network
+
+  currency-exchange-service:
+    image: currency-exchange-service:latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - spring-cloud-config-server
+      - naming-server
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+      EUREKA_INSTANCE_HOSTNAME: currency-exchange-service
+    networks:
+      - microservices-network
+
+  currency-exchange-service-2:
+    image: currency-exchange-service-2:latest
+    ports:
+      - "8001:8001"
+    depends_on:
+      - spring-cloud-config-server
+      - naming-server
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+      EUREKA_INSTANCE_HOSTNAME: currency-exchange-service-2
+    networks:
+      - microservices-network
+
+  currency-conversion-service:
+    image: currency-conversion-service:latest
+    ports:
+      - "8100:8100"
+    depends_on:
+      - spring-cloud-config-server
+      - naming-server
+      - currency-exchange-service
+      - currency-exchange-service-2
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    networks:
+      - microservices-network
+
+  limits-service:
+    image: limits-service:latest
+    ports:
+      - "8080:8082"
+    depends_on:
+      - spring-cloud-config-server
+      - naming-server
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    networks:
+      - microservices-network
+
+  api-gateway:
+    image: api-gateway:latest
+    ports:
+      - "8765:8765"
+    depends_on:
+      - naming-server
+      - currency-exchange-service
+      - currency-exchange-service-2
+      - currency-conversion-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:

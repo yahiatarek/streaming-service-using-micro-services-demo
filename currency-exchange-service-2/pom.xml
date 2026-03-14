@@ -108,6 +108,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>currency-exchange-service-2:latest</name>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
