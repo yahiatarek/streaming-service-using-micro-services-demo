@@ -1,10 +1,21 @@
 services:
+  zipkin:
+    image: openzipkin/zipkin:2.23
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-network
+
   spring-cloud-config-server:
     image: spring-cloud-config-server:latest
     ports:
       - "8888:8888"
+    depends_on:
+      - zipkin
     environment:
       SPRING_CLOUD_CONFIG_SERVER_GIT_URI: file:///config-repo
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     volumes:
       - .:/config-repo:ro
     networks:
@@ -15,11 +26,14 @@ services:
     ports:
       - "8761:8761"
     depends_on:
+      - zipkin
       - spring-cloud-config-server
     environment:
       EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
       EUREKA_CLIENT_FETCH_REGISTRY: "false"
       SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
@@ -28,6 +42,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+      - zipkin
       - spring-cloud-config-server
       - naming-server
     environment:
@@ -35,6 +50,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
       EUREKA_INSTANCE_HOSTNAME: currency-exchange-service
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
@@ -43,6 +60,7 @@ services:
     ports:
       - "8001:8001"
     depends_on:
+      - zipkin
       - spring-cloud-config-server
       - naming-server
     environment:
@@ -50,6 +68,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
       EUREKA_INSTANCE_HOSTNAME: currency-exchange-service-2
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
@@ -58,6 +78,7 @@ services:
     ports:
       - "8100:8100"
     depends_on:
+      - zipkin
       - spring-cloud-config-server
       - naming-server
       - currency-exchange-service
@@ -65,19 +86,24 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
   limits-service:
     image: limits-service:latest
     ports:
-      - "8080:8082"
+      - "8080:8085"
     depends_on:
+      - zipkin
       - spring-cloud-config-server
       - naming-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://spring-cloud-config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
@@ -86,12 +112,15 @@ services:
     ports:
       - "8765:8765"
     depends_on:
+      - zipkin
       - naming-server
       - currency-exchange-service
       - currency-exchange-service-2
       - currency-conversion-service
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     networks:
       - microservices-network
 
